@@ -1,12 +1,38 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * Film.
- */
-@Getter
-@Setter
+import java.time.LocalDate;
+
+@Data
+@EqualsAndHashCode(of = {"id"})
 public class Film {
+    private Long id;
+    @NotBlank(message = "Название фильма обязательно!")
+    private String name;
+    @Size(max=200, message = "Описание превышает максимальную длину в 200 символов!")
+    private String description;
+    private LocalDate releaseDate;
+    @Positive(message = "Длительность фильма должна быть положительной величиной!")
+    private Integer duration;
+
+
+    public void updateFrom(Film updatedFilm) {
+        if (updatedFilm.getName() != null && !updatedFilm.getName().isBlank()) {
+            this.name = updatedFilm.getName();
+        }
+        if (updatedFilm.getDescription() != null && !updatedFilm.getDescription().isBlank()) {
+            this.description = updatedFilm.getDescription();
+        }
+        if (updatedFilm.getReleaseDate() != null) {
+            this.releaseDate = updatedFilm.getReleaseDate();
+        }
+        if (updatedFilm.getDuration() != null) {
+            this.duration = updatedFilm.getDuration();
+        }
+    }
 }
