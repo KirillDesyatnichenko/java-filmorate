@@ -14,7 +14,7 @@ public class Film {
     private Long id;
     @NotBlank(message = "Название фильма обязательно!")
     private String name;
-    @Size(max=200, message = "Описание превышает максимальную длину в 200 символов!")
+    @Size(max = 200, message = "Описание превышает максимальную длину в 200 символов!")
     private String description;
     private LocalDate releaseDate;
     @Positive(message = "Длительность фильма должна быть положительной величиной!")
