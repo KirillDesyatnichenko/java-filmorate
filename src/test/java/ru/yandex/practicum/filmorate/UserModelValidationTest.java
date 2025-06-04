@@ -35,7 +35,7 @@ public class UserModelValidationTest {
         assertFalse(violations.isEmpty());
         boolean hasError = false;
         for (ConstraintViolation<User> violation : violations) {
-            if ("Некорректный адрес электронной почты.".equals(violation.getMessage())) {
+            if ("Некорректный адрес электронной почты!".equals(violation.getMessage())) {
                 hasError = true;
                 break;
             }
@@ -55,7 +55,7 @@ public class UserModelValidationTest {
         boolean hasError = false;
         for (ConstraintViolation<User> violation : violations) {
             System.out.println(violation.getMessage());
-            if ("Логин должен быть заполнен и не содержать пробелов!".equals(violation.getMessage())) {
+            if ("Логин должен быть заполнен!".equals(violation.getMessage())) {
                 hasError = true;
                 break;
             }

@@ -21,53 +21,40 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getUserList() {
+        log.info("Получение списка юзеров.");
         return users.values();
     }
 
     @PostMapping
     public User addNewUser(@Valid @RequestBody User user) throws ValidationException {
-        try {
-            validateUser(user);
-            user.setId(getNextUserId());
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(), user);
-            log.info("Новый пользователь с идентификатором {} зарегистрирован.", user.getId());
-            return user;
-        } catch (ValidationException e) {
-            log.error("Ошибка валидации при создании пользователя: {}", e.getMessage());
-            throw e;
-        }
+        validateUser(user);
+        user.setId(getNextUserId());
+        user.setDefaultNameIfEmpty(user.getLogin());
+        users.put(user.getId(), user);
+        log.info("Новый пользователь с идентификатором {} зарегистрирован.", user.getId());
+        return user;
     }
 
     @PutMapping
     public User updateUserInfo(@Valid @RequestBody User updatedUser) throws ValidationException {
-        try {
-            if (!users.containsKey(updatedUser.getId())) {
-                throw new NotFoundException("Пользователь с ID=" + updatedUser.getId() + " не существует.");
-            }
-            User oldUser = users.get(updatedUser.getId());
-            validateUser(updatedUser);
-            oldUser.updateFrom(updatedUser);
-            log.info("Профиль пользователя с идентификатором {} успешно обновлён.", updatedUser.getId());
-            return oldUser;
-        } catch (ValidationException | NotFoundException e) {
-            log.error("Ошибка обновления пользователя с ID {}: {}", updatedUser.getId(), e.getMessage());
-            throw e;
+        if (!users.containsKey(updatedUser.getId())) {
+            log.error("Пользователь с id {} не найден.", updatedUser.getId());
+            throw new NotFoundException("Пользователь с ID=" + updatedUser.getId() + " не существует.");
         }
+        User oldUser = users.get(updatedUser.getId());
+        validateUser(updatedUser);
+        oldUser.updateFrom(updatedUser);
+        log.info("Профиль пользователя с идентификатором {} успешно обновлён.", updatedUser.getId());
+        return oldUser;
     }
 
     private void validateUser(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() ||
-                !user.getEmail().contains("@")) {
-            throw new ValidationException("Адрес электронной почты некорректен!");
+        if (user.getLogin().contains(" ")) {
+            log.error("Ошибка валидации Логина");
+            throw new ValidationException("Логин должен не содержать пробелов!");
         }
-        if (user.getLogin() == null || user.getLogin().isBlank() ||
-                user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин должен быть заполнен и не содержать пробелов!");
-        }
-        if (user.getBirthday() == null || user.getBirthday().isAfter(java.time.LocalDate.now())) {
+        if (user.getBirthday().isAfter(java.time.LocalDate.now())) {
+            log.error("Ошибка валидации Даты рождения");
             throw new ValidationException("Дата рождения не может быть в будущем!");
         }
     }

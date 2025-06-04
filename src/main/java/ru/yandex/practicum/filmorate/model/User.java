@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,11 +12,13 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = {"id", "email"})
 public class User {
     private Long id;
-    @Email(message = "Некорректный адрес электронной почты.")
+    @NotNull(message = "Адрес электронной почты не заполнен!")
+    @Email(message = "Некорректный адрес электронной почты!")
     private String email;
-    @NotBlank(message = "Логин должен быть заполнен и не содержать пробелов!")
+    @NotBlank(message = "Логин должен быть заполнен!")
     private String login;
     private String name;
+    @NotNull(message = "Дата рождения не заполнена!")
     private LocalDate birthday;
 
 
@@ -26,11 +29,18 @@ public class User {
         if (updatedUser.getEmail() != null && !updatedUser.getEmail().isBlank()) {
             this.email = updatedUser.getEmail();
         }
+        setDefaultNameIfEmpty(this.login);
         if (updatedUser.getName() != null && !updatedUser.getName().isBlank()) {
             this.name = updatedUser.getName();
         }
         if (updatedUser.getBirthday() != null) {
             this.birthday = updatedUser.getBirthday();
+        }
+    }
+
+    public void setDefaultNameIfEmpty(String login) {
+        if (this.name == null || this.name.isBlank()) {
+            this.name = login;
         }
     }
 }

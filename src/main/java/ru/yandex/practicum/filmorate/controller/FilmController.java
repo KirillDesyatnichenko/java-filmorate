@@ -21,52 +21,35 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> getFilmList() {
+        log.info("Получение списка фильмов.");
         return films.values();
     }
 
     @PostMapping
     public Film addNewFilm(@Valid @RequestBody Film film) throws ValidationException {
-        try {
-            validateFilm(film);
-            film.setId(getNextId());
-            films.put(film.getId(), film);
-            log.info("Фильм успешно добавлен с идентификатором {}", film.getId());
-            return film;
-        } catch (ValidationException e) {
-            log.error("Ошибка валидации при добавлении фильма: {}", e.getMessage());
-            throw e;
-        }
+        validateFilm(film);
+        film.setId(getNextId());
+        films.put(film.getId(), film);
+        log.info("Фильм успешно добавлен с идентификатором {}", film.getId());
+        return film;
     }
 
     @PutMapping
     public Film updateFilmInfo(@Valid @RequestBody Film updatedFilm) throws ValidationException {
-        try {
-            if (!films.containsKey(updatedFilm.getId())) {
-                throw new NotFoundException("Фильм с id = " + updatedFilm.getId() + " не найден");
-            }
-            Film oldFilm = films.get(updatedFilm.getId());
-            validateFilm(updatedFilm);
-            oldFilm.updateFrom(updatedFilm);
-            log.info("Информация о фильме с идентификатором {} успешно обновлена.", updatedFilm.getId());
-            return oldFilm;
-        } catch (ValidationException | NotFoundException e) {
-            log.error("Ошибка обновления фильма с id {}: {}", updatedFilm.getId(), e.getMessage());
-            throw e;
+        if (!films.containsKey(updatedFilm.getId())) {
+            log.error("Фильм с id {} не найден", updatedFilm.getId());
+            throw new NotFoundException("Фильм с id = " + updatedFilm.getId() + " не найден");
         }
+        Film oldFilm = films.get(updatedFilm.getId());
+        validateFilm(updatedFilm);
+        oldFilm.updateFrom(updatedFilm);
+        log.info("Информация о фильме с идентификатором {} успешно обновлена.", updatedFilm.getId());
+        return oldFilm;
     }
 
     private void validateFilm(Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("Название фильма должно быть указано!");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина описания — 200 символов!");
-        }
         if (film.getReleaseDate().isBefore(java.time.LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Дата релиза не может быть ранее 28 декабря 1895 года!");
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Длительность фильма должна быть положительной величиной!");
         }
     }
 
