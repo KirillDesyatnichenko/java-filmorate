@@ -25,7 +25,7 @@ public class UserService {
         return storage.findUserById(id);
     }
 
-    public User addNewUser( User user) throws ValidationException {
+    public User addNewUser(User user) throws ValidationException {
         return storage.addNewUser(user);
     }
 
