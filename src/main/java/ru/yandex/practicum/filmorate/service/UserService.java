@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -18,6 +16,26 @@ import java.util.Set;
 public class UserService {
 
     private final UserStorage storage;
+
+    public Collection<User> getUserList() {
+        return storage.getUserList();
+    }
+
+    public User getUserById(Long id) {
+        return storage.findUserById(id);
+    }
+
+    public User addNewUser( User user) throws ValidationException {
+        return storage.addNewUser(user);
+    }
+
+    public User updateUserInfo(User updatedUser) throws ValidationException {
+        return storage.updateUserInfo(updatedUser);
+    }
+
+    public void deleteUser(Long userId) {
+        storage.deleteUser(userId);
+    }
 
     public void addFriend(Long id, Long friendId) {
         User user = storage.findUserById(id);

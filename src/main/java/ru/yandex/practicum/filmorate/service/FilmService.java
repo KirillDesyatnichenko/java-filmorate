@@ -3,13 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.IllegalArgumentException;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,30 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage storage;
     private final UserStorage userStorage;
+
+    public Film findById(Long id) {
+        return storage.findById(id);
+    }
+
+    public Collection<Film> getFilmList() {
+        return storage.getFilmList();
+    }
+
+    public Film addNewFilm(Film film) throws ValidationException {
+        return storage.addNewFilm(film);
+    }
+
+    public Film updateFilmInfo(Film updatedFilm) throws ValidationException {
+        return storage.updateFilmInfo(updatedFilm);
+    }
+
+    public void deleteFilm(Long filmId) {
+        storage.deleteFilm(filmId);
+    }
+
+    public List<Film> getTopRatedFilms(int count) {
+        return storage.getTopRatedFilms(count);
+    }
 
     public void likeFilm(Long filmId, Long userId) {
         Film film = storage.findById(filmId);
@@ -40,14 +65,5 @@ public class FilmService {
 
         film.getLikes().remove(userId);
         log.info("Пользователь с id {} снял лайк с фильма с id {}", userId, id);
-    }
-
-    public List<Film> getTopRatedFilms(int limit) {
-        Collection<Film> allFilms = storage.getFilmList();
-        log.info("Получение списка из {} фильмов с наибольшим количеством лайков.", limit);
-        return allFilms.stream()
-                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
-                .limit(limit)
-                .collect(Collectors.toList());
     }
 }

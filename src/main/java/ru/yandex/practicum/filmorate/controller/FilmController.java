@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,37 +19,36 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService service;
-    private final FilmStorage storage;
 
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable Long id) {
         log.info("Запрошена информация о фильме с id={}", id);
-        return storage.findById(id);
+        return service.findById(id);
     }
 
     @GetMapping
     public Collection<Film> getAllFilms() {
         log.info("Запрошен полный список фильмов.");
-        return storage.getFilmList();
+        return service.getFilmList();
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) throws ValidationException {
         log.info("Создание нового фильма с названием '{}'", film.getName());
-        return storage.addNewFilm(film);
+        return service.addNewFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film updatedFilm) throws ValidationException {
         log.info("Новая информация о фильме с идентификатором {} успешно добавлена.", updatedFilm.getId());
-        return storage.updateFilmInfo(updatedFilm);
+        return service.updateFilmInfo(updatedFilm);
     }
 
     @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable Long id) {
         log.info("Фильм с идентификатором {} успешно удалён.", id);
-        storage.deleteFilm(id);
+        service.deleteFilm(id);
     }
 
     @PutMapping("/{id}/like/{userId}")

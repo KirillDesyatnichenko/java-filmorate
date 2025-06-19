@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,37 +18,36 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserStorage storage;
     private final UserService service;
 
     @GetMapping
     public Collection<User> getUserList() {
         log.info("Запрошены все пользователи.");
-        return storage.getUserList();
+        return service.getUserList();
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         log.info("Запрошена информация о пользователе с id={}", id);
-        return storage.findUserById(id);
+        return service.getUserById(id);
     }
 
     @PostMapping
     public User addNewUser(@Valid @RequestBody User user) throws ValidationException {
         log.info("Регистрация нового пользователя с именем '{}'.", user.getName());
-        return storage.addNewUser(user);
+        return service.addNewUser(user);
     }
 
     @PutMapping
     public User updateUserInfo(@Valid @RequestBody User updatedUser) throws ValidationException {
         log.info("Профиль пользователя с идентификатором {} успешно обновлён.", updatedUser.getId());
-        return storage.updateUserInfo(updatedUser);
+        return service.updateUserInfo(updatedUser);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long userId) {
         log.info("Удаление пользователя с идентификатором {}.", userId);
-        storage.deleteUser(userId);
+        service.deleteUser(userId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
