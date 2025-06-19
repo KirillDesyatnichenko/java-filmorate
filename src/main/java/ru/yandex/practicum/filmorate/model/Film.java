@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
@@ -23,6 +25,7 @@ public class Film {
     @Positive(message = "Длительность фильма должна быть положительной величиной!")
     private Integer duration;
 
+    private Set<Long> likes = new HashSet<>();
 
     public void updateFrom(Film updatedFilm) {
         if (updatedFilm.getName() != null && !updatedFilm.getName().isBlank()) {

@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id", "email"})
@@ -21,6 +23,7 @@ public class User {
     @NotNull(message = "Дата рождения не заполнена!")
     private LocalDate birthday;
 
+    private Set<Long> friends = new HashSet<>();
 
     public void updateFrom(User updatedUser) {
         if (updatedUser.getLogin() != null && !updatedUser.getLogin().isBlank()) {
