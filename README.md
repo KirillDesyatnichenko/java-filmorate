@@ -17,4 +17,4 @@
 
 ## Диаграмма базы данных
 
-<img src="DBD_Filmorate.png" alt="Диаграмма базы данных" width="500"/>
+<img src="DBD_Filmorate.png" alt="Диаграмма базы данных" width="742"/>
