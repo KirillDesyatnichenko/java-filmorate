@@ -23,7 +23,7 @@
 
 ## Ниже приведены примеры SQL-запросов, демонстрирующих взаимодействие с базой данных проекта Filmorate.
 
-## 1. Получение списка всех фильмов (SELECT)
+## 1. Получение списка всех фильмов
 
 ```sql
 SELECT *
@@ -31,26 +31,26 @@ FROM film
 ORDER BY name;
 ```
 
-## 2. Добавление нового фильма (INSERT INTO)
+## 2. Добавление нового фильма
 
 ```sql
 INSERT INTO film (name, description, release_date, duration, mpaarating)
 VALUES ('Новый фильм', 'Описание нового фильма.', '2025-01-01', 120, 'PG-13');
 ```
 
-## 3. Обновление описания существующего фильма (UPDATE)
+## 3. Обновление описания существующего фильма
 
 ```sql
 UPDATE film SET description = 'Обновленное описание' WHERE id = 1;
 ```
 
-## 4. Удаление фильма (DELETE)
+## 4. Удаление фильма
 
 ```sql
 DELETE FROM film WHERE id = 1;
 ```
 
-## 5. Поиск фильмов определенного жанра (JOIN)
+## 5. Поиск фильмов определенного жанра
 
 ```sql
 SELECT f.name AS film_name,
@@ -61,7 +61,7 @@ INNER JOIN genre AS g ON fg.genre_id = g.id
 WHERE genre_name = 'Комедия';
 ```
 
-## 6. Подсчет количества друзей конкретного пользователя (COUNT)
+## 6. Подсчет количества друзей конкретного пользователя
 
 ```sql
 SELECT COUNT(*) AS friend_count
@@ -69,7 +69,7 @@ FROM friendship
 WHERE (initiator_user_id = 1 OR friend_user_id = 1) AND status = 'CONFIRMED';
 ```
 
-## 7. Выборка всех пользователей, которым понравился определенный фильм (LIKE)
+## 7. Выборка всех пользователей, которым понравился определенный фильм
 
 ```sql
 SELECT u.name
@@ -78,7 +78,7 @@ INNER JOIN user AS u ON l.user_id = u.id
 WHERE l.film_id = 1;
 ```
 
-### 8. Список рекомендаций фильмов пользователям, основываясь на предпочтениях друзей (GROUP BY, HAVING)
+### 8. Список рекомендаций фильмов пользователям, основываясь на предпочтениях друзей
 
 ```sql
 WITH friends_likes AS (
