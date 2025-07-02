@@ -18,7 +18,7 @@
 
 ## Диаграмма базы данных
 
-<img src="DBD_Filmorate.png" alt="Диаграмма базы данных" width="729"/>
+<img src="BD_Filmorate.png" alt="Диаграмма базы данных" width="729"/>
 
 ## Примеры SQL-запросов для основных операций приложения Filmorate
 
