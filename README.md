@@ -14,10 +14,11 @@
 - **user**: таблица пользователей
 - **friendship**: таблица связей дружбы
 - **likes**: таблица лайков пользователей к фильмам
+- **rating**: таблица рейтинга МРА
 
 ## Диаграмма базы данных
 
-<img src="DBD_Filmorate.png" alt="Диаграмма базы данных" width="719"/>
+<img src="DBD_Filmorate.png" alt="Диаграмма базы данных" width="729"/>
 
 ## Примеры SQL-запросов для основных операций приложения Filmorate
 
@@ -26,16 +27,21 @@
 ## 1. Получение списка всех фильмов
 
 ```sql
-SELECT *
-FROM film
-ORDER BY name;
+SELECT f.name,
+       f.description,
+       f.release_date,
+       f.duration,
+       r.mpa_rating
+FROM film AS f
+INNER JOIN rating AS r ON f.rating_id = r.rating_id
+ORDER BY f.name;
 ```
 
 ## 2. Добавление нового фильма
 
 ```sql
-INSERT INTO film (name, description, release_date, duration, mpaarating)
-VALUES ('Новый фильм', 'Описание нового фильма.', '2025-01-01', 120, 'PG-13');
+INSERT INTO film (name, description, release_date, duration, rating_id)
+VALUES ('Новый фильм', 'Описание нового фильма.', '2025-01-01', 120, 3);
 ```
 
 ## 3. Обновление описания существующего фильма
