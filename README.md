@@ -8,17 +8,17 @@
 
 БД состоит из следующих основных компонентов:
 
-- **film**: таблица фильмов
+- **films**: таблица фильмов
 - **genre**: таблица жанров фильмов
 - **film_genre**: связующая таблица фильм-жанры
-- **user**: таблица пользователей
+- **users**: таблица пользователей
 - **friendship**: таблица связей дружбы
 - **likes**: таблица лайков пользователей к фильмам
 - **rating**: таблица рейтинга МРА
 
 ## Диаграмма базы данных
 
-<img src="BD_Filmorate.png" alt="Диаграмма базы данных" width="729"/>
+<img src="BD_Filmorate.png" alt="Диаграмма базы данных" width="941"/>
 
 ## Примеры SQL-запросов для основных операций приложения Filmorate
 
@@ -27,44 +27,44 @@
 ## 1. Получение списка всех фильмов
 
 ```sql
-SELECT f.name,
+SELECT f.title,
        f.description,
        f.release_date,
-       f.duration,
+       f.duration_min,
        r.mpa_rating
-FROM film AS f
+FROM films AS f
 INNER JOIN rating AS r ON f.rating_id = r.rating_id
-ORDER BY f.name;
+ORDER BY f.title;
 ```
 
 ## 2. Добавление нового фильма
 
 ```sql
-INSERT INTO film (name, description, release_date, duration, rating_id)
+INSERT INTO films (title, description, release_date, duration_min, rating_id)
 VALUES ('Новый фильм', 'Описание нового фильма.', '2025-01-01', 120, 3);
 ```
 
 ## 3. Обновление описания существующего фильма
 
 ```sql
-UPDATE film SET description = 'Обновленное описание' WHERE id = 1;
+UPDATE films SET description = 'Обновленное описание' WHERE film_id = 1;
 ```
 
 ## 4. Удаление фильма
 
 ```sql
-DELETE FROM film WHERE id = 1;
+DELETE FROM films WHERE film_id = 1;
 ```
 
 ## 5. Поиск фильмов определенного жанра
 
 ```sql
-SELECT f.name AS film_name,
-       g.name AS genre_name
-FROM film AS f
-INNER JOIN film_genre AS fg ON f.id = fg.film_id
-INNER JOIN genre AS g ON fg.genre_id = g.id
-WHERE genre_name = 'Комедия';
+SELECT f.title,
+       g.genre_name
+FROM films AS f
+INNER JOIN film_genre AS fg ON f.film_id = fg.film_id
+INNER JOIN genre AS g ON fg.genre_id = g.genre_id
+WHERE g.genre_name = 'Комедия';
 ```
 
 ## 6. Подсчет количества друзей конкретного пользователя
@@ -72,7 +72,7 @@ WHERE genre_name = 'Комедия';
 ```sql
 SELECT COUNT(*) AS friend_count
 FROM friendship
-WHERE (initiator_user_id = 1 OR friend_user_id = 1) AND status = 'CONFIRMED';
+WHERE (initiator_user_id = 1 OR friend_user_id = 1);
 ```
 
 ## 7. Выборка всех пользователей, которым понравился определенный фильм
@@ -80,24 +80,24 @@ WHERE (initiator_user_id = 1 OR friend_user_id = 1) AND status = 'CONFIRMED';
 ```sql
 SELECT u.name
 FROM likes AS l
-INNER JOIN user AS u ON l.user_id = u.id
+INNER JOIN users AS u ON l.user_id = u.user_id
 WHERE l.film_id = 1;
 ```
 
 ### 8. Список рекомендаций фильмов пользователям, основываясь на предпочтениях друзей
 
 ```sql
-WITH friends_likes AS (
-SELECT fl.film_id, COUNT(*) AS like_count
-FROM friendship AS fr
-INNER JOIN likes fl ON fr.friend_user_id = fl.user_id
-WHERE (initiator_user_id = 1 OR friend_user_id = 1) AND status = 'CONFIRMED';
-GROUP BY fl.film_id
-HAVING COUNT(*) > 1
-)
-SELECT f.name, COUNT(fl.like_count) AS recommendation_score
-FROM friends_likes AS fl
-INNER JOIN film f ON fl.film_id = f.id
-GROUP BY f.name
-ORDER BY recommendation_score DESC LIMIT 5;
+SELECT f.film_id,
+       f.title,
+       f.description,
+       f.release_date,
+       f.duration_min,
+       f.rating_id,
+       r.mpa_rating
+FROM films f
+LEFT JOIN likes l ON f.film_id = l.film_id
+LEFT JOIN rating r ON f.rating_id = r.rating_id
+GROUP BY f.film_id, f.title, f.description, f.release_date, f.duration_min, f.rating_id, r.mpa_rating
+ORDER BY COUNT(l.user_id) DESC, f.film_id ASC
+LIMIT ?
 ```
