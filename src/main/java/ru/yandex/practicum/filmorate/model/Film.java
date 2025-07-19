@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -24,8 +25,10 @@ public class Film {
     @NotNull(message = "Длительность фильма не заполнена!")
     @Positive(message = "Длительность фильма должна быть положительной величиной!")
     private Integer duration;
+    private MpaRating mpa;
 
     private Set<Long> likes = new HashSet<>();
+    private Set<Genre> genres = new LinkedHashSet<>();
 
     public void updateFrom(Film updatedFilm) {
         if (updatedFilm.getName() != null && !updatedFilm.getName().isBlank()) {

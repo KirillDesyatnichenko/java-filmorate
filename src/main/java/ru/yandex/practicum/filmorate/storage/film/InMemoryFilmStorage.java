@@ -55,12 +55,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film findById(Long filmId) {
-        if (!films.containsKey(filmId)) {
-            log.error("Фильма с id {} не найден.", filmId);
-            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
-        }
-        return films.get(filmId);
+    public Optional<Film> findById(Long filmId) {
+        Film film = films.get(filmId);
+        return Optional.ofNullable(film);
     }
 
     @Override
@@ -71,6 +68,20 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void saveGenres(Film film) {
+        Film storedFilm = films.get(film.getId());
+        if (storedFilm == null) {
+            throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
+        }
+
+        storedFilm.setGenres(film.getGenres() != null
+                ? new LinkedHashSet<>(film.getGenres())
+                : new LinkedHashSet<>());
+
+        log.info("Жанры фильма с id {} успешно сохранены в памяти.", film.getId());
     }
 
     private void validateFilm(Film film) {

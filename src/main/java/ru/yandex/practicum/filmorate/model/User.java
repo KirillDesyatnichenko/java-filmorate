@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +23,7 @@ public class User {
     private LocalDate birthday;
 
     private Set<Long> friends = new HashSet<>();
+    private Set<Long> likedFilms = new HashSet<>();
 
     public void updateFrom(User updatedUser) {
         if (updatedUser.getLogin() != null && !updatedUser.getLogin().isBlank()) {

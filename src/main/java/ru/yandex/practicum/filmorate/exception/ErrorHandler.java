@@ -70,7 +70,7 @@ public class ErrorHandler {
     @ExceptionHandler(Throwable.class)
     @ResponseBody
     public ErrorResponse handleUnexpectedError(Throwable throwable) {
-        log.error("Произошла непредвиденная ошибка.");
+        log.error("Произошла непредвиденная ошибка: {}", throwable.getMessage());
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 }
