@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
-public class LikeDbStorage {
+public class LikeDbStorage implements LikeStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -37,19 +37,23 @@ public class LikeDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public void addLike(Long filmId, Long userId) {
         jdbcTemplate.update(ADD_LIKE_SQL, filmId, userId);
     }
 
+    @Override
     public void removeLike(Long filmId, Long userId) {
         jdbcTemplate.update(REMOVE_LIKE_SQL, filmId, userId);
     }
 
+    @Override
     public boolean hasLike(Long filmId, Long userId) {
         Integer count = jdbcTemplate.queryForObject(HAS_LIKE_SQL, Integer.class, filmId, userId);
         return count != null && count > 0;
     }
 
+    @Override
     public Set<Long> getLikesForFilm(Long filmId) {
         return new HashSet<>(jdbcTemplate.queryForList(GET_LIKES_FOR_FILM_SQL, Long.class, filmId));
     }

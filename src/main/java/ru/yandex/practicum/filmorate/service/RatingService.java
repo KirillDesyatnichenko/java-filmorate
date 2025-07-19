@@ -3,8 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.storage.dao.RatingDbStorage;
+import ru.yandex.practicum.filmorate.storage.dao.RatingStorage;
 
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class RatingService {
 
-    private final RatingDbStorage storage;
+    private final RatingStorage storage;
 
     public Collection<MpaRating> getRatingList() {
         log.info("Получение списка всех рейтингов.");
@@ -21,7 +22,7 @@ public class RatingService {
     }
 
     public MpaRating findRatingById(int ratingId) {
-        log.info("Получение рейтинга с идентификатором {}", ratingId);
-        return storage.getRatingById(ratingId);
+        return storage.getRatingById(ratingId)
+                .orElseThrow(() -> new NotFoundException("Рейтинг с id " + ratingId + " не найден."));
     }
 }

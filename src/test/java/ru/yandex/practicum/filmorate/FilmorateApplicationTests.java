@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.dao.UserDbStorage;
 
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -31,10 +32,14 @@ class FilmorateApplicationTests {
 
 		userStorage.addNewUser(user);
 
-		User foundUser = userStorage.findUserById(1L);
+		Optional<User> foundUserOptional = userStorage.findUserById(1L);
+
+		assertThat(Optional.ofNullable(foundUserOptional))
+				.isPresent();
+
+        User foundUser = foundUserOptional.get();
 
 		assertThat(foundUser)
-				.isNotNull()
 				.extracting(User::getName, User::getEmail, User::getLogin, User::getBirthday)
 				.containsExactly("Шиз", "Lol@example.com", "Шиз123", LocalDate.of(1990, 1, 1));
 	}

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -52,34 +53,65 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User findUserById(Long userId) {
+    public Optional<User> findUserById(Long userId) {
         User user = users.get(userId);
         if (user == null) {
             log.error("Пользователь не найден: id {} (InMemory)", userId);
-            throw new NotFoundException("Пользователь с ID = " + userId + " не найден.");
+            return Optional.empty();
         }
-        return user;
+        return Optional.of(user);
     }
 
     @Override
     public void addFriend(Long userId, Long friendId) {
-        User user = findUserById(userId);
-        User friend = findUserById(friendId);
-        if (user.getFriends().add(friendId)) {
-            log.info("Пользователь {} добавил в друзья пользователя {} (InMemory)", userId, friendId);
-        } else {
-            log.warn("Пользователь {} уже является другом пользователя {} (InMemory)", friendId, userId);
-        }
+        Optional<User> optUser = findUserById(userId);
+        Optional<User> optFriend = findUserById(friendId);
+
+        optUser.ifPresentOrElse(
+                user -> optFriend.ifPresentOrElse(
+                        friend -> {
+                            if (user.getFriends().add(friendId)) {
+                                log.info("Пользователь {} добавил в друзья пользователя {} (InMemory)", userId, friendId);
+                            } else {
+                                log.warn("Пользователь {} уже является другом пользователя {} (InMemory)", friendId, userId);
+                            }
+                        },
+                        () -> log.error("Пользователь с id {} не найден.", friendId)
+                ),
+                () -> log.error("Пользователь с id {} не найден.", userId)
+        );
     }
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
-        User user = findUserById(userId);
-        if (user.getFriends().remove(friendId)) {
-            log.info("Пользователь {} удалил из друзей пользователя {} (InMemory)", userId, friendId);
-        } else {
-            log.warn("Пользователь {} не был в друзьях у пользователя {} (InMemory)", friendId, userId);
-        }
+        Optional<User> optUser = findUserById(userId);
+        Optional<User> optFriend = findUserById(friendId);
+
+        optUser.ifPresentOrElse(
+                user -> optFriend.ifPresentOrElse(
+                        friend -> {
+                            if (user.getFriends().remove(friendId)) {
+                                log.info("Пользователь {} удалил из друзей пользователя {} (InMemory)", userId, friendId);
+                            } else {
+                                log.warn("Пользователь {} не был в друзьях у пользователя {} (InMemory)", friendId, userId);
+                            }
+                        },
+                        () -> log.error("Пользователь с id {} не найден.", friendId)
+                ),
+                () -> log.error("Пользователь с id {} не найден.", userId)
+        );
+    }
+
+    @Override
+    public List<User> findUsersByIds(Collection<Long> ids) {
+        return users.values().stream()
+                .filter(user -> ids.contains(user.getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isUserNotExists(Long id) {
+        return users.containsKey(id);
     }
 
     private void validateUser(User user) {
